@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat /Users/jun/superpowers/README.md | grep -A 30 \"Manual Install\\\\|manual\\\\|copy\\\\|~/.claude\" | head -50)",
+      "Bash(ls ~/.claude/ 2>/dev/null)",
+      "Bash(find /usr/local/bin /opt/homebrew/bin ~/Library /Applications -name \"claude\" -maxdepth 5 2>/dev/null | head -10)",
+      "Bash(\"/Users/jun/Library/Application Support/Claude/claude-code-vm/2.1.181/claude\" --version)",
+      "Bash(find ~/Library -name \"*.json\" -path \"*/claude*\" -name \"settings*\" 2>/dev/null | head -5)",
+      "Bash(mkdir -p ~/.claude/plugins)",
+      "Bash(cp -r /Users/jun/superpowers ~/.claude/plugins/superpowers)",
+      "Bash(bash ~/.claude/plugins/superpowers/hooks/run-hook.cmd session-start)",
+      "Bash(read skill *)",
+      "Bash(mkdir -p ~/.claude/skills && ls ~/.claude/skills)",
+      "Bash(mkdir -p /usr/local/bin)",
+      "Bash(ln -sf \"/Users/jun/Library/Application Support/Claude/claude-code/2.1.181/claude.app/Contents/MacOS/claude\" ~/bin/claude)",
+      "Bash(mkdir -p ~/bin)",
+      "Bash(~/bin/claude --version)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git commit -q -m ' *)"
+    ]
+  }
+}
