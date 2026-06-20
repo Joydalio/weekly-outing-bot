@@ -53,7 +53,6 @@ def generate_recommendation(client, *, location: str, child: str,
                             today: str, avoid: list[str]) -> Recommendation:
     prompt = build_prompt(location=location, child=child, today=today, avoid=avoid)
     messages = [{"role": "user", "content": prompt}]
-    response = None
     for _ in range(5):
         response = client.messages.create(
             model=MODEL,
@@ -68,6 +67,8 @@ def generate_recommendation(client, *, location: str, child: str,
             messages.append({"role": "assistant", "content": response.content})
             continue
         break
+    if response.stop_reason != "end_turn":
+        raise RuntimeError(f"추천 생성 미완료: stop_reason={response.stop_reason}")
     text = next(b.text for b in response.content if b.type == "text")
     data = json.loads(text)
     return Recommendation(**data)

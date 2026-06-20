@@ -74,6 +74,9 @@ def test_generate_recommendation_resumes_on_pause_turn():
     )
     assert rec.place_name == "한강공원"
     assert client.messages.create.call_count == 2
+    second_messages = client.messages.create.call_args_list[1].kwargs["messages"]
+    assert second_messages[-1]["role"] == "assistant"
+    assert second_messages[-1]["content"] == []
 
 
 def test_generate_recommendation_uses_web_search_tool():
@@ -93,3 +96,4 @@ def test_generate_recommendation_uses_web_search_tool():
     tool_types = [t["type"] for t in kwargs["tools"]]
     assert "web_search_20260209" in tool_types
     assert kwargs["output_config"]["format"]["type"] == "json_schema"
+    assert kwargs["output_config"]["format"]["schema"] is recommender.RECOMMENDATION_SCHEMA
