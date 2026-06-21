@@ -5,8 +5,13 @@ from src import generate, recommender
 
 def _rec():
     return recommender.Recommendation(
-        place_name="서울숲 공원", intro="i", reason="r", weather_note="w",
-        map_query="서울숲 공원", travel_note="t", prep="p",
+        places=[
+            recommender.Place("서울숲", "사슴 먹이주기", "35분", "25분"),
+            recommender.Place("길동생태공원", "곤충 관찰", "20분", "10분"),
+            recommender.Place("어린이대공원", "동물원", "40분", "30분"),
+        ],
+        weather="주말 흐림.",
+        prep="간식·물.",
     )
 
 
@@ -22,7 +27,7 @@ def test_run_dry_run_prints_and_does_not_send(capsys):
          patch("src.generate.history.append_entry") as mock_append:
         generate.run(dry_run=True)
     out = capsys.readouterr().out
-    assert "서울숲 공원" in out
+    assert "서울숲" in out
     mock_send.assert_not_called()
     mock_append.assert_not_called()
 
@@ -52,8 +57,9 @@ def test_run_sends_and_records_on_success():
         generate.run(dry_run=False)
     mock_send.assert_called_once()
     assert mock_send.call_args[0][0] == "tok"
-    mock_append.assert_called_once()
-    assert mock_append.call_args[0][2] == "서울숲 공원"
+    assert mock_append.call_count == 3  # 3곳 모두 기록
+    recorded = [c.args[2] for c in mock_append.call_args_list]
+    assert recorded == ["서울숲", "길동생태공원", "어린이대공원"]
 
 
 def test_run_sends_failure_message_after_retries():

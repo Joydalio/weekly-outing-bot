@@ -1,25 +1,16 @@
 import html
-import urllib.parse
 
 import requests
 
 
-def build_map_link(map_query: str) -> str:
-    return "https://map.naver.com/v5/search/" + urllib.parse.quote(map_query)
-
-
 def format_message(rec, date_label: str) -> str:
     e = html.escape
-    link = build_map_link(rec.map_query)
-    return (
-        f"<b>이번 주 나들이 추천 · {e(date_label)}</b>\n\n"
-        f"📍 <b>{e(rec.place_name)}</b>\n"
-        f"{e(rec.intro)}\n\n"
-        f"왜 좋은가 — {e(rec.reason)}\n\n"
-        f"날씨 — {e(rec.weather_note)}\n\n"
-        f'🗺️ <a href="{e(link)}">지도 보기</a> · {e(rec.travel_note)}\n\n'
-        f"준비물 — {e(rec.prep)}"
-    )
+    lines = [f"<b>이번 주 나들이 · {e(date_label)}</b>"]
+    for i, p in enumerate(rec.places, 1):
+        lines.append(f"{i}. {e(p.name)} — {e(p.note)} / 대중교통 {e(p.transit)}·차 {e(p.car)}")
+    lines.append(f"날씨: {e(rec.weather)}")
+    lines.append(f"준비물: {e(rec.prep)}")
+    return "\n".join(lines)
 
 
 def send_message(token: str, chat_id: str, text: str) -> dict:
@@ -30,7 +21,7 @@ def send_message(token: str, chat_id: str, text: str) -> dict:
             "chat_id": chat_id,
             "text": text,
             "parse_mode": "HTML",
-            "disable_web_page_preview": False,
+            "disable_web_page_preview": True,
         },
         timeout=30,
     )

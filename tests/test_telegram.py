@@ -4,40 +4,45 @@ from src import telegram
 
 
 @dataclass
+class StubPlace:
+    name: str
+    note: str
+    transit: str
+    car: str
+
+
+@dataclass
 class StubRec:
-    place_name: str = "서울숲 공원"
-    intro: str = "사슴 먹이주기 체험이 있어요."
-    reason: str = "초여름 야외 활동에 좋아요."
-    weather_note: str = "수·목 맑음(26도)."
-    map_query: str = "서울숲 공원"
-    travel_note: str = "둔촌오륜역에서 약 35분"
-    prep: str = "여벌 옷·간식"
+    places: list
+    weather: str = "주말 흐림, 우산 챙기기."
+    prep: str = "간식·물·여벌옷."
 
 
-def test_build_map_link_encodes_query():
-    link = telegram.build_map_link("서울숲 공원")
-    assert link.startswith("https://map.naver.com/v5/search/")
-    assert " " not in link  # 공백이 인코딩됨
+def _rec():
+    return StubRec(places=[
+        StubPlace("길동생태공원", "곤충 관찰", "20분", "10분"),
+        StubPlace("서울숲", "사슴 먹이주기", "35분", "25분"),
+        StubPlace("어린이대공원", "동물원", "40분", "30분"),
+    ])
 
 
-def test_format_message_has_at_most_three_emojis():
-    msg = telegram.format_message(StubRec(), "6/24")
-    emoji_count = sum(msg.count(e) for e in ["📍", "🗺️", "🌤️"])
-    assert emoji_count <= 3
-    assert "📍" in msg and "🗺️" in msg
+def test_format_message_lists_three_places_with_times():
+    msg = telegram.format_message(_rec(), "6/24")
+    assert "1. 길동생태공원" in msg
+    assert "2. 서울숲" in msg
+    assert "3. 어린이대공원" in msg
+    assert "대중교통 20분·차 10분" in msg
 
 
-def test_format_message_includes_fields_and_link():
-    msg = telegram.format_message(StubRec(), "6/24")
-    assert "서울숲 공원" in msg
-    assert "6/24" in msg
-    assert "지도 보기" in msg
-    assert "https://map.naver.com/v5/search/" in msg
-    assert "둔촌오륜역에서 약 35분" in msg
+def test_format_message_has_weather_and_prep_lines_and_no_link():
+    msg = telegram.format_message(_rec(), "6/24")
+    assert "날씨: 주말 흐림" in msg
+    assert "준비물: 간식·물" in msg
+    assert "map.naver.com" not in msg  # 지도 링크 제거됨
 
 
 def test_format_message_escapes_html():
-    rec = StubRec(intro="<b>주의</b> & 안전")
+    rec = StubRec(places=[StubPlace("<b>곳</b> & 터", "n", "1분", "2분")])
     msg = telegram.format_message(rec, "6/24")
     assert "&lt;b&gt;" in msg
     assert "&amp;" in msg

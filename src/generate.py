@@ -48,7 +48,8 @@ def run(dry_run: bool = False) -> None:
     telegram.send_message(secrets["telegram_token"], secrets["telegram_chat_id"], message)
 
     if rec is not None:
-        history.append_entry(config.HISTORY_PATH, today.isoformat(), rec.place_name)
+        for p in rec.places:
+            history.append_entry(config.HISTORY_PATH, today.isoformat(), p.name)
 
 
 if __name__ == "__main__":
