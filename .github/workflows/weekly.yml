@@ -1,0 +1,31 @@
+name: weekly-outing
+
+on:
+  schedule:
+    - cron: "0 23 * * 2"   # 화 23:00 UTC = 수 08:00 KST
+  workflow_dispatch:        # GitHub에서 수동 실행 버튼
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write       # history.json 커밋용
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: Generate and send
+        run: python -m src.generate
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      - name: Commit history
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add history.json
+          git diff --staged --quiet || git commit -m "chore: 주간 추천 기록 업데이트"
+          git push
