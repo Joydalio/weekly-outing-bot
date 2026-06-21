@@ -79,7 +79,7 @@ def test_generate_recommendation_resumes_on_pause_turn():
     assert second_messages[-1]["content"] == []
 
 
-def test_generate_recommendation_uses_web_search_tool():
+def test_generate_recommendation_uses_web_search_without_output_config():
     payload = {
         "place_name": "X", "intro": "x", "reason": "x", "weather_note": "x",
         "map_query": "x", "travel_note": "x", "prep": "x",
@@ -93,7 +93,24 @@ def test_generate_recommendation_uses_web_search_tool():
     )
     _, kwargs = client.messages.create.call_args
     assert kwargs["model"] == "claude-opus-4-8"
-    tool_types = [t["type"] for t in kwargs["tools"]]
-    assert "web_search_20260209" in tool_types
-    assert kwargs["output_config"]["format"]["type"] == "json_schema"
-    assert kwargs["output_config"]["format"]["schema"] is recommender.RECOMMENDATION_SCHEMA
+    assert "web_search_20260209" in [t["type"] for t in kwargs["tools"]]
+    # output_config(구조화 출력)는 웹검색 루프를 망가뜨리므로 보내지 않는다
+    assert "output_config" not in kwargs
+
+
+def test_generate_recommendation_uses_last_text_block_and_strips_prose():
+    # 라이브 버그 재현: 검색 전 placeholder 블록 + 산문/코드펜스로 감싼 최종 JSON 블록,
+    # 그리고 모델이 끼워넣을 수 있는 여분 키. 마지막 블록의 JSON만 정확히 파싱해야 한다.
+    payload = {
+        "place_name": "올림픽공원", "intro": "들꽃마루.", "reason": "야외 산책.",
+        "weather_note": "맑음.", "map_query": "올림픽공원", "travel_note": "약 10분",
+        "prep": "물", "source": "blog",  # 여분 키 — 무시되어야 함
+    }
+    early = _text_block("둔촌오륜역 인근을 검색하겠습니다.")
+    final = _text_block("추천드려요:\n```json\n" + json.dumps(payload, ensure_ascii=False) + "\n```")
+    client = _make_client(SimpleNamespace(stop_reason="end_turn", content=[early, final]))
+    rec = recommender.generate_recommendation(
+        client, location="강동구", child="만 4세 여아", today="2026-06-24", avoid=[]
+    )
+    assert rec.place_name == "올림픽공원"
+    assert rec.map_query == "올림픽공원"
