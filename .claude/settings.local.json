@@ -17,7 +17,29 @@
       "Bash(~/bin/claude --version)",
       "Bash(git init *)",
       "Bash(git add *)",
-      "Bash(git commit -q -m ' *)"
+      "Bash(git commit -q -m ' *)",
+      "Skill(claude-api)",
+      "Skill(claude-api:*)",
+      "Bash(ls /Users/jun/.claude/skills/superpowers--subagent-driven-development/scripts/ 2>/dev/null && echo \"---\" && which python3 python 2>/dev/null && python3 --version)",
+      "Bash(git checkout *)",
+      "Bash(/Users/jun/.claude/skills/superpowers--subagent-driven-development/scripts/task-brief docs/superpowers/plans/2026-06-20-weekly-outing-bot.md 1)",
+      "Bash(gh repo *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" https://api.github.com/repos/DietrichGebert/ponytail)",
+      "Bash(curl -s https://api.github.com/repos/DietrichGebert/ponytail)",
+      "Bash(curl -s \"https://api.github.com/repos/DietrichGebert/ponytail/contents/\")",
+      "Bash(curl -s \"https://raw.githubusercontent.com/DietrichGebert/ponytail/main/README.md\")",
+      "Read(//Users/jun/.claude/plugins/**)",
+      "Bash(curl -s \"https://api.github.com/repos/DietrichGebert/ponytail/contents/.claude-plugin\")",
+      "Bash(claude plugin *)",
+      "Bash(PDIR=/Users/jun/.claude/plugins/marketplaces/ponytail; echo \"=== COMMANDS ===\"; ls \"$PDIR/commands\"; echo; echo \"=== SKILLS ===\"; ls \"$PDIR/skills\"; echo; echo \"=== README: Use / Verify section ===\"; sed -n '/## Use/,/## /p' \"$PDIR/README.md\" | head -60)",
+      "Bash(PDIR=/Users/jun/.claude/plugins/marketplaces/ponytail; sed -n '/start a new thread/,/## Install/p' \"$PDIR/README.md\" | sed -n '1,80p')",
+      "Bash(command -v node)",
+      "Bash(/Users/jun/.claude/skills/superpowers--subagent-driven-development/scripts/task-brief docs/superpowers/plans/2026-06-20-weekly-outing-bot.md 2)",
+      "Bash(git commit *)",
+      "Bash(/Users/jun/.claude/skills/superpowers--subagent-driven-development/scripts/task-brief docs/superpowers/plans/2026-06-20-weekly-outing-bot.md 3)",
+      "Bash(/Users/jun/.claude/skills/superpowers--subagent-driven-development/scripts/task-brief docs/superpowers/plans/2026-06-20-weekly-outing-bot.md 4)",
+      "Bash(python -m pytest tests/test_recommender.py -v)",
+      "Bash(.venv/bin/python -m pytest tests/test_recommender.py -v)"
     ]
   }
 }
