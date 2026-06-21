@@ -30,7 +30,7 @@ def _generate_with_retry(client, today, avoid, attempts: int = 2):
 def run(dry_run: bool = False) -> None:
     today = today_kst()
     date_label = f"{today.month}/{today.day}"
-    avoid = history.load_recent(config.HISTORY_PATH, config.RECENT_WEEKS)
+    avoid = config.EXCLUDE + history.load_recent(config.HISTORY_PATH, config.RECENT_WEEKS)
 
     client = anthropic.Anthropic()
     rec = _generate_with_retry(client, today, avoid)

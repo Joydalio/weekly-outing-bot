@@ -27,6 +27,20 @@ def test_run_dry_run_prints_and_does_not_send(capsys):
     mock_append.assert_not_called()
 
 
+def test_run_prepends_permanent_excludes_to_avoid():
+    with patch("src.generate.history.load_recent", return_value=["과거장소"]), \
+         patch("src.generate.recommender.generate_recommendation", return_value=_rec()) as mock_gen, \
+         patch("src.generate.anthropic.Anthropic"), \
+         patch("src.generate.config.load_secrets",
+               return_value={"telegram_token": "tok", "telegram_chat_id": "chat"}), \
+         patch("src.generate.telegram.send_message"), \
+         patch("src.generate.history.append_entry"):
+        generate.run(dry_run=False)
+    avoid = mock_gen.call_args.kwargs["avoid"]
+    assert "올림픽공원" in avoid
+    assert "과거장소" in avoid
+
+
 def test_run_sends_and_records_on_success():
     with patch("src.generate.history.load_recent", return_value=["과거장소"]), \
          patch("src.generate.recommender.generate_recommendation", return_value=_rec()), \

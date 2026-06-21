@@ -22,6 +22,7 @@ def test_build_prompt_includes_context():
     assert "만 4세 여아" in prompt
     assert "2026-06-24" in prompt
     assert "서울숲" in prompt and "한강" in prompt
+    assert "간결" in prompt  # 글 길이 절반: 간결 지시 포함
 
 
 def test_build_prompt_handles_empty_avoid():
